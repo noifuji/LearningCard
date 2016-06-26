@@ -28,19 +28,19 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.ViewHo
         CardView cv;
         TextView mQuestionText;
         TextView mAnswerText;
-        LinearLayout buttonsLayout;
+        LinearLayout mButtonsLayout;
         Button goodButton;
         Button badButton;
         Button excellentButton;
 
         public ViewHolder(View v) {
             super(v);
-            buttonsLayout = (LinearLayout) itemView.findViewById(R.id.layout_answer);
+            mButtonsLayout = (LinearLayout) itemView.findViewById(R.id.layout_answer);
             cv = (CardView) itemView.findViewById(R.id.cv);
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    buttonsLayout.setVisibility(View.VISIBLE);
+                    mButtonsLayout.setVisibility(View.VISIBLE);
                 }
             });
             mQuestionText = (TextView) itemView.findViewById(R.id.text_question);
@@ -72,6 +72,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.ViewHo
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final Card data;
+        holder.mButtonsLayout.setVisibility(View.GONE);
         data = mDataSet.get(position);
         // - get element from your dataset at this position
         // - replace the contents of the view with that element

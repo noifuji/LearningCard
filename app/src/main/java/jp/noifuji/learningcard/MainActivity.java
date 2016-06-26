@@ -11,10 +11,14 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import jp.noifuji.learningcard.data.CardDataRepository;
+import jp.noifuji.learningcard.logic.LogicExecutor;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private CardRepository mCardRepository;
+    private LogicExecutor mLogicExecutor;
+    private MainPresenter mPresenter;
 
     @Bind(R.id.text_count_excellent)
     TextView mExcellentTextCount;
@@ -45,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("rating", "Bad");
         startActivity(intent);
     }
+
     @OnClick(R.id.layout_blank)
     public void onBlankClicked() {
         Intent intent = new Intent(this, CardListActivity.class);
@@ -58,14 +63,40 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+
+
         mCardRepository = CardDataRepository.getInstance();
+        mLogicExecutor = ((ApplicationComponent)getApplication()).getLogicExecutor();
+
+        mPresenter = new MainPresenter(this, mLogicExecutor, mCardRepository);
+        mPresenter.create();
+
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mPresenter.resume();
 
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.destroy();
+        ButterKnife.unbind(this);
+    }
+
+    public void startLoading() {
+        mBadTextCount.setText("loading");
+        mExcellentTextCount.setText("loading");
+        mBlankTextCount.setText("loading");
+        mGoodTextCount.setText("loading");
+    }
+
+    public void stopLoading() {
         List<Card> e = mCardRepository.getCardsByRating("Excellent");
         mExcellentTextCount.setText(e.size() + "枚");
         List<Card> g = mCardRepository.getCardsByRating("Good");
@@ -76,9 +107,5 @@ public class MainActivity extends AppCompatActivity {
         mBlankTextCount.setText(bl.size() + "枚");
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ButterKnife.unbind(this);
-    }
+
 }
