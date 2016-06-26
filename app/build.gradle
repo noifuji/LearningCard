@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'spoon'
+apply plugin: 'jacoco'
 
 buildscript {
     repositories {
@@ -30,6 +31,7 @@ android {
     }
 }
 
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -59,3 +61,20 @@ spoon {
     debug = true
     adbTimeout 60
 }
+
+task jacoco(type: JacocoReport, dependsOn: "testDebugUnitTest") {
+    reports {
+        xml.enabled = true
+        html.enabled = true
+    }
+    classDirectories = fileTree(
+            dir: './build/intermediates/classes/debug',
+            excludes: ['**/R.class',
+                       '**/R$*.class',
+                       '**/*$ViewBinder*.*',
+                       '**/BuildConfig.class',
+            ])
+    sourceDirectories = files('src/main/java')
+    executionData = files('build/jacoco/testDebugUnitTest.exec')
+}
+
